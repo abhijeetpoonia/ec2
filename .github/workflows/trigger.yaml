@@ -16,7 +16,7 @@ permissions:
 
 env:
   tf_state_bucket: "asgbucket121"  
-  tf_state_key: "asg/prod/terraform.tfstate"  
+  tf_state_key: "asg/ec2/terraform.tfstate"  
   tf_region: "ap-south-1"  
 
 jobs:
