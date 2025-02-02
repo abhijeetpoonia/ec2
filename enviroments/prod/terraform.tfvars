@@ -1,0 +1,5 @@
+launch_template_name = "prod-launch-template"
+instance_type       = "t2.micro"
+key_name            = "aes"
+subnet_id           = "subnet-0ff7ef2b7250432d7"
+vpc_id              = "vpc-0133e1d848f62f9d5"
