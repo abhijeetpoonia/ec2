@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: Terraform Plan and Deploy
 
 on:
   pull_request:
@@ -20,9 +20,8 @@ env:
   tf_region: "ap-south-1"  
 
 jobs:
-  terraform-plan-output:
-    if: github.event_name == 'pull_request'
-    name: Terraform Plan
+  terraform-plan-and-trigger:
+    name: Terraform Plan and Trigger
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -92,13 +91,8 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
-  trigger-dope-workflow:
-    if: github.event.pull_request.merged == true
-    name: Trigger Dope Workflow
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
       - name: Trigger Dope Workflow
+        if: github.event.pull_request.merged == true
         run: |
           response=$(curl -X POST \
             -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
@@ -126,6 +120,7 @@ jobs:
           fi
 
       - name: Debug Info
+        if: github.event.pull_request.merged == true
         run: |
           echo "Repository: ${{ github.repository }}"
           echo "Branch: ${{ github.ref }}"
