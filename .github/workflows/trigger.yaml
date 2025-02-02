@@ -1,0 +1,43 @@
+name: Trigger Main Terraform Workflow
+
+on:
+  push:
+    branches:
+      - prod    
+    # Removed the paths filter to trigger on all file changes
+  pull_request:
+    branches:
+      - prod   
+
+jobs:
+  trigger-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Info
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Event: ${{ github.event_name }}"
+
+      - name: Trigger Terraform Workflow
+        run: |
+          response=$(curl -X POST \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -w "\nHTTP_STATUS:%{http_code}" \
+            https://api.github.com/repos/${{ github.repository_owner }}/Dope/dispatches \
+            -d '{
+              "event_type": "terraform-trigger",
+              "client_payload": {
+                "repository": "${{ github.event.repository.name }}",
+                "branch": "prod",
+                "action": "plan"
+              }
+            }')
+          
+          echo "Response: $response"
+          
+          if [[ $response == *"HTTP_STATUS:4"* ]] || [[ $response == *"HTTP_STATUS:5"* ]]; then
+            echo "Error triggering workflow"
+            exit 1
+          fi
