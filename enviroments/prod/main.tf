@@ -1,5 +1,5 @@
 module "launch_template" {
-  source               = "../../modules/launch_template"
+  source               = "../../modules/ec2"
   launch_template_name = var.launch_template_name
   instance_type       = var.instance_type
   ami_id              = var.ami_id
