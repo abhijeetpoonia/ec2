@@ -1,4 +1,4 @@
-module "launch_template" {
+module "ec2" {
   source               = "../../modules/ec2"
   launch_template_name = var.launch_template_name
   instance_type       = var.instance_type
