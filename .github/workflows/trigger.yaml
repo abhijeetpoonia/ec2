@@ -4,8 +4,8 @@ on:
     branches:
       - prod
     types:
-      - opened       # When PR is created
-      - closed       # When PR is merged/closed
+      - opened        
+      - closed       
 
 jobs:
   notify-dope:
