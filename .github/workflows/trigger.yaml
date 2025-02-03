@@ -1,26 +1,26 @@
 name: PR Handler
-
 on:
   pull_request:
     branches:
       - prod
     types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
+      - opened       # When PR is created
+      - closed       # When PR is merged/closed
 
 jobs:
   notify-dope:
     runs-on: ubuntu-latest
+    # Add conditions to prevent duplicate runs
+    if: |
+      (github.event.action == 'opened') ||
+      (github.event.action == 'closed' && github.event.pull_request.merged == true)
     steps:
       - name: Trigger Dope Workflow
         run: |
-          # For PR updates (non-merge)
-          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
+          if [[ "${{ github.event.action }}" == "opened" ]]; then
             ACTION="plan"
             EVENT_TYPE="pr-trigger"
-          else
+          elif [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
             ACTION="apply"
             EVENT_TYPE="terraform-trigger"
           fi
@@ -34,8 +34,7 @@ jobs:
               "event_type": "'"$EVENT_TYPE"'",
               "client_payload": {
                 "repository": "${{ github.event.repository.name }}",
-                "ref": "${{ github.event.pull_request.head.ref }}",
-                "base_ref": "${{ github.event.pull_request.base.ref }}",
+                "ref": "prod",
                 "pr_number": "${{ github.event.pull_request.number }}",
                 "action": "'"$ACTION"'",
                 "pr_merged": ${{ github.event.pull_request.merged }}
